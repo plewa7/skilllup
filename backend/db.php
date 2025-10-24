@@ -1,5 +1,5 @@
 <?php
-$host = 'db'; // nazwa serwisu z docker-compose.yml
+$host = 'db';
 $user = 'root';
 $pass = 'root';
 $dbname = 'todo_app';
@@ -10,7 +10,6 @@ if ($conn->connect_error) {
     die('Connection failed: ' . $conn->connect_error);
 }
 
-// Create notes table if it doesn't exist
 $sql = "CREATE TABLE IF NOT EXISTS notes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     content TEXT NOT NULL,

@@ -1,83 +1,88 @@
 import './style.css'
 
-interface Note {
-  id: number;
-  content: string;
+type Note = {
+    id: number;      
+    content: string;  
 }
 
-const API_URL = 'http://localhost:8080';
+const BACKEND_URL = 'http://localhost:8080';
 
-const notesList = document.querySelector<HTMLDivElement>('#notes-list')!;
-const noteContent = document.querySelector<HTMLTextAreaElement>('#note-content')!;
-const addNoteButton = document.querySelector<HTMLButtonElement>('#add-note')!;
+const notesList = document.querySelector('#notes-list') as HTMLDivElement;
+const noteContent = document.querySelector('#note-content') as HTMLTextAreaElement;
+const addBtn = document.querySelector('#add-note') as HTMLButtonElement;
 
-async function fetchNotes(): Promise<void> {
-  try {
-    const response = await fetch(`${API_URL}`);
-    const notes: Note[] = await response.json();
-    displayNotes(notes);
-  } catch (error) {
-    console.error('Error fetching notes:', error);
-  }
+const styleNotatki = {
+    note: 'background: white; padding: 15px; margin: 10px 0; border-radius: 4px; ' + 
+             'display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);',
+    deleteButton: 'background: #ff0404ff; color: white; border: none; padding: 5px 10px; ' + 
+                  'border-radius: 4px; cursor: pointer; transition: background 0.3s;'
 }
 
-function displayNotes(notes: Note[]): void {
-  notesList.innerHTML = notes
-    .map(
-      (note) => `
-        <div class="note">
-          <p class="note-content">${note.content}</p>
-          <button class="delete" onclick="window.deleteNote(${note.id})">Delete</button>
-        </div>
-      `
-    )
-    .join('');
-}
-
-async function addNote(): Promise<void> {
-  const content = noteContent.value.trim();
-  if (!content) return;
-
-  try {
-    const response = await fetch(`${API_URL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content }),
-    });
-
-    if (response.ok) {
-      noteContent.value = '';
-      fetchNotes();
+async function pobierzNotes() {
+    try {
+        const res = await fetch(BACKEND_URL);
+        const notes: Note[] = await res.json();
+        
+        const html = notes.map(note => `
+            <div style="${styleNotatki.note}">
+                <div>${note.content}</div>
+                <button 
+                    onclick="window.usunNote(${note.id})" 
+                    style="${styleNotatki.deleteButton}"
+                >Usuń</button>
+            </div>
+        `).join('');
+        
+        notesList.innerHTML = html;
+    } catch (err) {
+        console.error('Nie udało się pobrać notatek:', err);
     }
-  } catch (error) {
-    console.error('Error adding note:', error);
-  }
 }
 
-async function deleteNote(id: number): Promise<void> {
-  try {
-    const response = await fetch(`${API_URL}?id=${id}`, {
-      method: 'DELETE',
-    });
+async function addNote() {
+    const content = noteContent.value.trim();
+    if (!content) return;
 
-    if (response.ok) {
-      fetchNotes();
+    try {
+        const res = await fetch(BACKEND_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: content })
+        });
+
+        if (res.ok) {
+            noteContent.value = ''; 
+            pobierzNotes();
+        }
+    } catch (err) {
+        console.error('Nie udało się dodać notatki:', err);
     }
-  } catch (error) {
-    console.error('Error deleting note:', error);
-  }
 }
 
-addNoteButton.addEventListener('click', addNote);
-noteContent.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    addNote();
-  }
+async function usunNote(id: number) {
+    try {
+        const res = await fetch(`${BACKEND_URL}?id=${id}`, {
+            method: 'DELETE'
+        });
+
+        if (res.ok) {
+            pobierzNotes();
+        }
+    } catch (err) {
+        console.error('Nie udało się usunąć notatki:', err);
+    }
+}
+
+addBtn.addEventListener('click', addNote);
+
+noteContent.addEventListener('keypress', (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        addNote();
+    }
 });
 
-(window as any).deleteNote = deleteNote;
+(window as any).usunNote = usunNote;
 
-fetchNotes();
+pobierzNotes();
+
