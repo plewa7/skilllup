@@ -1,0 +1,63 @@
+name: Test PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: todo_app
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -uroot -proot"
+          --health-interval 5s
+          --health-timeout 2s
+          --health-retries 10
+
+      php-backend:
+        image: php:8.2-apache
+        ports:
+          - 8080:80
+        options: >-
+          --health-cmd "curl -f http://localhost || exit 1"
+          --health-interval 5s
+          --health-timeout 2s
+          --health-retries 10
+        volumes:
+          - ./:/var/www/html/
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Wait for backend to be ready
+        run: |
+          echo "Waiting for PHP backend..."
+          for i in {1..20}; do
+            curl -f http://localhost:8080 && break
+            echo "Waiting..."
+            sleep 3
+          done
+
+      - name: Run API tests
+        run: npm test
+        working-directory: ./frontend
+        env:
+          BACKEND_URL: http://localhost:8080
