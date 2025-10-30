@@ -2,6 +2,13 @@ import fetch from "node-fetch";
 
 const BACKEND_URL = "http://localhost:8080";
 
+type Note = {
+  id: number;
+  content: string;
+};
+
+type DeleteResponse = { message: string };
+
 describe("API Notes", () => {
   it("add, fetch and delete note", async () => {
 
@@ -11,17 +18,20 @@ describe("API Notes", () => {
       body: JSON.stringify({ content: "test" }),
     });
 
-    const added = await addRes.json();
+    const added: Note = await addRes.json();
     console.log("Added note:", added);
 
     const getRes = await fetch(BACKEND_URL);
-    console.log("All notes:", await getRes.json());
+    const allNotes: Note[] = await getRes.json();
+    console.log("All notes:", allNotes);
 
     const delRes = await fetch(`${BACKEND_URL}?id=${added.id}`, { method: "DELETE" });
-    const deleted = await delRes.json();
+    const deleted: DeleteResponse = await delRes.json();
     console.log("Deleted note:", deleted, added.id);
+
     expect(deleted.message).toBe("Note deleted");
 
-    console.log("All notes:", await (await fetch(BACKEND_URL)).json());
+    const finalNotesRes: Note[] = await (await fetch(BACKEND_URL)).json();
+    console.log("Final notes:", finalNotesRes);
   });
 });
