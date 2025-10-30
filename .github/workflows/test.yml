@@ -33,17 +33,18 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+        working-directory: ./frontend
 
       - name: Start PHP backend
-        run: |
-          php -S 0.0.0.0:8080 -t ./ &
-
+        run: php -S 0.0.0.0:8080 -t ./backend/ &
+      
       - name: Wait for backend
         run: npx wait-on http://localhost:8080
 
       - name: Run API tests
         run: npm test
+        working-directory: ./frontend
         env:
           BACKEND_URL: http://localhost:8080
           DB_HOST: db
