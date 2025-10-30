@@ -26,12 +26,12 @@ jobs:
         run: npm install
 
       - name: Start backend and DB
-        working-directory: . 
-        run: docker-compose up -d --build
+        working-directory: .
+        run: docker compose up -d --build
 
       - name: Wait for backend API to be ready
+        working-directory: .
         run: npx wait-on --timeout 60000 ${{ env.BACKEND_URL }}
-        working-directory: . 
 
       - name: Run API tests
         working-directory: ./frontend
@@ -40,4 +40,4 @@ jobs:
       - name: Tear down Docker Compose
         if: always()
         working-directory: .
-        run: docker-compose down
+        run: docker compose down
