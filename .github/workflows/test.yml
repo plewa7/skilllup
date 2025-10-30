@@ -1,4 +1,4 @@
-name: Test PR
+name: PR Tests
 
 on:
   pull_request:
@@ -10,22 +10,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      db:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: todo_app
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping -h localhost -uroot -proot"
-          --health-interval 5s
-          --health-timeout 2s
-          --health-retries 10
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -35,18 +22,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Start PHP backend
-        run: |
-          php -S 0.0.0.0:8080 -t ./ &
+      - name: Set up Docker Compose
+        run: docker-compose up -d --build
 
       - name: Wait for backend
-        run: npx wait-on http://localhost:8080
+        run: sleep 10
 
       - name: Run API tests
         run: npm test
-        env:
-          BACKEND_URL: http://localhost:8080
-          DB_HOST: db
-          DB_USER: root
-          DB_PASSWORD: root
-          DB_NAME: todo_app
