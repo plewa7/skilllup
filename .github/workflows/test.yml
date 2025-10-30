@@ -29,14 +29,14 @@ jobs:
 
       - name: Wait for backend API to be ready
         working-directory: .
-        # czekamy na endpoint zwracający JSON
+        # czekamy na endpoint backendu w kontenerze
         run: npx wait-on --timeout 60000 http://localhost:8080/
 
       - name: Run API tests
         working-directory: ./frontend
-        # ustawiamy BACKEND_URL, aby testy trafiły do backendu w Dockerze
+        # ustawiamy BACKEND_URL na serwis PHP w Compose network
         env:
-          BACKEND_URL: http://host.docker.internal:8080
+          BACKEND_URL: http://php:80
         run: npm test
 
       - name: Tear down Docker Compose
