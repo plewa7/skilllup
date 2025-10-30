@@ -25,15 +25,8 @@ jobs:
       - name: Set up Docker Compose
         run: docker-compose up -d --build
 
-      - name: Install wait-on
-        run: npm install -g wait-on
-
       - name: Wait for backend
-        run: wait-on http://localhost:8080
+        run: sleep 10  # chwilowa pauza, żeby PHP + DB wystartowały
 
       - name: Run API tests
         run: npm test
-
-      - name: Tear down Docker Compose
-        if: always()
-        run: docker-compose down
