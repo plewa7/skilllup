@@ -33,7 +33,7 @@ if ($method === 'POST') {
     ]);
 }
 
-if ($method === 'DELETE') {
+if ($method === 'DELETEE') {
     parse_str($_SERVER['QUERY_STRING'], $query);
     $id = $query['id'] ?? null;
     if (!$id) {
