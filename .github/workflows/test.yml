@@ -9,9 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend  # wszystkie komendy npm będą w katalogu frontend
+    env:
+      BACKEND_URL: http://localhost:8080
 
     steps:
       - name: Checkout repo
@@ -23,27 +22,22 @@ jobs:
           node-version: 20
 
       - name: Install frontend dependencies
+        working-directory: ./frontend
         run: npm install
 
-      - name: Check Docker & Compose version
-        run: |
-          docker --version
-          docker compose version
+      - name: Start backend and DB
+        working-directory: . 
+        run: docker-compose up -d --build
 
-      - name: Start backend using Docker Compose
-        working-directory: ./  # docker-compose.yml w katalogu głównym repo
-        run: docker compose up -d --build
-
-      - name: Install wait-on globally
-        run: npm install -g wait-on
-
-      - name: Wait for backend to be ready
-        run: wait-on http://localhost:8080
+      - name: Wait for backend API to be ready
+        run: npx wait-on --timeout 60000 ${{ env.BACKEND_URL }}
+        working-directory: . 
 
       - name: Run API tests
+        working-directory: ./frontend
         run: npm test
 
       - name: Tear down Docker Compose
-        working-directory: ./
         if: always()
-        run: docker compose down
+        working-directory: .
+        run: docker-compose down
