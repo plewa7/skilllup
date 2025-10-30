@@ -22,12 +22,17 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: npm install
 
-      - name: Set up Docker Compose for backend
+      - name: Check Docker & Compose version
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Start backend using Docker Compose
         working-directory: ./  # docker-compose.yml w katalogu głównym repo
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       - name: Install wait-on globally
         run: npm install -g wait-on
@@ -41,4 +46,4 @@ jobs:
       - name: Tear down Docker Compose
         working-directory: ./
         if: always()
-        run: docker-compose down
+        run: docker compose down
