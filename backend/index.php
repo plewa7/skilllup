@@ -29,8 +29,7 @@ if ($method === 'POST') {
     $stmt->execute();
     echo json_encode([
         'id' => $conn->insert_id,
-        'content' => $data['content'],
-        'created_at' => date('Y-m-d H:i:s')
+        'content' => $data['content']
     ]);
 }
 
