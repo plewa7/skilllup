@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend  # wszystkie komendy npm będą w katalogu frontend
 
     steps:
       - name: Checkout repo
@@ -22,11 +25,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Set up Docker Compose
+      - name: Set up Docker Compose for backend
+        working-directory: ./  # docker-compose.yml w katalogu głównym repo
         run: docker-compose up -d --build
 
-      - name: Wait for backend
-        run: sleep 10
+      - name: Install wait-on globally
+        run: npm install -g wait-on
+
+      - name: Wait for backend to be ready
+        run: wait-on http://localhost:8080
 
       - name: Run API tests
         run: npm test
+
+      - name: Tear down Docker Compose
+        working-directory: ./
+        if: always()
+        run: docker-compose down
