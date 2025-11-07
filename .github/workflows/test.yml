@@ -34,7 +34,7 @@ jobs:
 
       - name: Run API tests
         working-directory: ./frontend
-        # BACKEND_URL wskazuje na root endpoint
+        # BACKEND_URL wskazuje na root endpointewq
         env:
           BACKEND_URL: http://localhost:8080/
         run: npm test
