@@ -12,34 +12,38 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm install
+        run: npm ci
 
       - name: Start backend and DB
-        working-directory: .
-        run: docker compose up -d --build
+        run: |
+          docker compose up -d --build
+          docker ps -a  # 👀 pokażemy logi, żeby łatwiej debugować
+
+      - name: Show backend logs (for debugging if it fails)
+        if: failure()
+        run: docker compose logs
 
       - name: Wait for backend API to be ready
-        working-directory: .
-        # czekamy na root endpoint, który zwraca JSON
-        run: npx wait-on --timeout 60000 http://localhost:8080/
+        run: |
+          echo "Waiting for backend at http://localhost:8080/ ..."
+          npx wait-on --timeout 60000 tcp:8080
+          curl -s http://localhost:8080/ || true  # 👀 pokaż, co faktycznie zwraca backend
 
       - name: Run API tests
         working-directory: ./frontend
-        # BACKEND_URL wskazuje na root endpointewq
         env:
           BACKEND_URL: http://localhost:8080/
         run: npm test
 
       - name: Tear down Docker Compose
         if: always()
-        working-directory: .
         run: docker compose down
