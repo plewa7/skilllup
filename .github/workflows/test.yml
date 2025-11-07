@@ -12,37 +12,37 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 20
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm ci
+        run: npm install
 
       - name: Start backend and DB
-        run: |
-          docker compose up -d --build
-          docker ps -a  # 👀 pokażemy logi, żeby łatwiej debugować
+        working-directory: .
+        run: docker compose up -d --build
 
-      - name: Show backend logs (for debugging if it fails)
-        if: failure()
-        run: docker compose logs
-
-      - name: Wait for backend API to be ready
+      - name: Wait for PHP backend to be ready
         run: |
-          echo "Waiting for backend at http://localhost:8080/ ..."
+          echo "⏳ Waiting for backend to start on port 8080..."
           npx wait-on --timeout 60000 tcp:8080
-          curl -s http://localhost:8080/ || true  # 👀 pokaż, co faktycznie zwraca backend
+          echo "✅ Backend port is open, checking response..."
+          curl -v http://localhost:8080/ || true
 
       - name: Run API tests
         working-directory: ./frontend
         env:
           BACKEND_URL: http://localhost:8080/
         run: npm test
+
+      - name: Show backend logs if something fails
+        if: failure()
+        run: docker compose logs php
 
       - name: Tear down Docker Compose
         if: always()
