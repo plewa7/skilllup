@@ -51,7 +51,7 @@ jobs:
       - name: Run API tests
         working-directory: ./frontend
         env:
-          BACKEND_URL: http://localhost:8080/index.php
+          BACKEND_URL: http://localhost:8081
         run: npm test
 
       - name: Show backend logs on failure

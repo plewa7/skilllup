@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8080/index.php";
+const BACKEND_URL = "http://localhost:8081";
 
 type Note = {
   id: number;
