@@ -13,7 +13,6 @@ describe("API Notes", () => {
   it("add, fetch and delete note", async () => {
     console.log(`🔗 Testing backend at: ${BACKEND_URL}`);
 
-    // 1️⃣ ADD NOTE
     const addRes = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -23,18 +22,16 @@ describe("API Notes", () => {
     const addText = await addRes.text();
     console.log("Raw add response:", addText);
 
-    // Spróbuj sparsować JSON, jeśli możliwe
     let added: Note;
     try {
       added = JSON.parse(addText);
     } catch {
-      throw new Error("❌ Backend nie zwrócił JSON przy dodawaniu notatki");
+      throw new Error("❌");
     }
 
     expect(added).toHaveProperty("id");
     expect(added).toHaveProperty("content");
 
-    // 2️⃣ FETCH NOTES
     const getRes = await fetch(BACKEND_URL);
     const getText = await getRes.text();
     console.log("Raw get response:", getText);
@@ -43,12 +40,11 @@ describe("API Notes", () => {
     try {
       allNotes = JSON.parse(getText);
     } catch {
-      throw new Error("❌ Backend nie zwrócił JSON przy pobieraniu notatek");
+      throw new Error("❌");
     }
 
     expect(Array.isArray(allNotes)).toBe(true);
 
-    // 3️⃣ DELETE NOTE
     const delRes = await fetch(`${BACKEND_URL}?id=${added.id}`, { method: "DELETE" });
     const delText = await delRes.text();
     console.log("Raw delete response:", delText);
@@ -57,7 +53,7 @@ describe("API Notes", () => {
     try {
       deleted = JSON.parse(delText);
     } catch {
-      throw new Error("❌ Backend nie zwrócił JSON przy usuwaniu notatki");
+      throw new Error("❌");
     }
 
     expect(deleted.message).toBe("Note deleted");
@@ -71,12 +67,12 @@ describe("API Notes", () => {
     try {
       finalNotes = JSON.parse(finalText);
     } catch {
-      throw new Error("❌ Backend nie zwrócił JSON przy końcowym sprawdzeniu notatek");
+      throw new Error("❌");
     }
 
     const stillThere = finalNotes.find((n) => n.id === added.id);
     expect(stillThere).toBeUndefined();
 
-    console.log("✅ Test zakończony sukcesem");
+    console.log("✅");
   });
 });
