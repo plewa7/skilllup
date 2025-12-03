@@ -58,7 +58,6 @@ describe("API Notes", () => {
 
     expect(deleted.message).toBe("Note deleted");
 
-    // 4️⃣ FINAL CHECK
     const finalRes = await fetch(BACKEND_URL);
     const finalText = await finalRes.text();
     console.log("Raw final response:", finalText);
