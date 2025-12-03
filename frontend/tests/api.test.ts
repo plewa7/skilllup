@@ -26,7 +26,7 @@ describe("API Notes", () => {
     try {
       added = JSON.parse(addText);
     } catch {
-      throw new Error("❌");
+      throw new Error("  ❌");
     }
 
     expect(added).toHaveProperty("id");
