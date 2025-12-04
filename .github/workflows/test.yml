@@ -35,7 +35,7 @@ jobs:
             echo "❌ MySQL not ready yet, waiting..."
             sleep 3
           done
-          echo "✅ MySQL is ready!"
+          echo "✅ MySQL is readyewq!"
 
       - name: Wait for backend API to be ready
         run: |
