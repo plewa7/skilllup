@@ -39,7 +39,7 @@ jobs:
 
       - name: Wait for backend API to be ready
         run: |
-          echo "⏳ Waiting for backend to start on port 8080..."
+          echo "⏳ Waiting for ba2121ckend to start on port 8080..."
           npx wait-on --timeout 60000 tcp:8080
           echo "✅ Backend port is open, checking PHP response..."
           curl -v http://localhost:8080/index.php || true
