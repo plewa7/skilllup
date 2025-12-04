@@ -32,7 +32,7 @@ jobs:
           for i in {1..20}; do
             docker exec $(docker ps -qf "name=db") \
               mysqladmin ping -h localhost -uroot -proot --silent && break
-            echo "❌ MySQL not ready yet, waiting..."
+            echo "❌ MySQL not ready yet, weqwaiting..."
             sleep 3
           done
           echo "✅ MySQL is readyewq!"
