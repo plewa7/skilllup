@@ -28,7 +28,7 @@ describe("API Notes", () => {
     try {
       added = JSON.parse(addText);
     } catch {
-      throw new Error("❌ Backend nie zwrócił JSON przy dodawaniu notatki");
+      throw new Error("❌ Backend nie zwróewqcił JSON przy dodawaniu notatki");
     }
 
     expect(added).toHaveProperty("id");
