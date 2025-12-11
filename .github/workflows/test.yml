@@ -23,8 +23,12 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
       - name: Start backend and DB
-        run: docker compose up -d --build
+        run: docker compose up -d --build php db
 
       - name: Wait for MySQL to be ready
         run: |
