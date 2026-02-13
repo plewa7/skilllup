@@ -13,7 +13,7 @@ describe("API Notes", () => {
   it("add, fetch and delete note", async () => {
     console.log(`🔗 Testing backend at: ${BACKEND_URL}`);
 
-    // 1️⃣ ADD NOTE
+    // 1️⃣ ADD eqwew
     const addRes = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -28,7 +28,7 @@ describe("API Notes", () => {
     try {
       added = JSON.parse(addText);
     } catch {
-      throw new Error("❌ Backend nie zwrócił JSON przy dodawaniu notatki");
+      throw new Error("❌ Backend nie zwróewqcił JSON przy dodawaniu notatki");
     }
 
     expect(added).toHaveProperty("id");
